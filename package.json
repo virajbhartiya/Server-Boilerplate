@@ -1,0 +1,60 @@
+{
+  "name": "servercode",
+  "version": "1.0.0",
+  "description": "Rate My Office",
+  "main": "App.ts",
+  "scripts": {
+    "start": "nodemon src/App.ts",
+    "start_cron": "node backupCron.js",
+    "build": "tsc --build",
+    "start:prod": "pm2 start App.ts --name 'servercode' && pm2 save"
+  },
+  "keywords": [
+    "office",
+    "rate"
+  ],
+  "author": "Viraj Bhartiya",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/compression": "^1.7.5",
+    "@types/cookie-parser": "^1.4.7",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/lodash": "^4.14.202",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^20.12.12",
+    "@types/nodemailer": "^6.4.14",
+    "@types/passport": "^1.0.16",
+    "@types/passport-google-oauth": "^1.0.45",
+    "@types/passport-jwt": "^4.0.0",
+    "axios": "^1.7.1",
+    "nodemon": "^3.0.1"
+  },
+  "dependencies": {
+    "chai": "^5.0.0",
+    "compression": "^1.7.4",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "cron": "^3.1.6",
+    "dotenv": "^16.3.1",
+    "exceljs": "^4.4.0",
+    "express": "^4.18.2",
+    "express-jwt": "^8.4.1",
+    "express-validator": "^7.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "lodash": "^4.17.21",
+    "mocha": "^10.2.0",
+    "moment": "^2.30.1",
+    "mongoose": "^8.4.0",
+    "morgan": "^1.10.0",
+    "node-fetch": "^3.3.2",
+    "nodemailer": "^6.9.8",
+    "passport": "^0.6.0",
+    "passport-google-oauth": "^2.0.0",
+    "passport-jwt": "^4.0.1",
+    "path": "^0.12.7",
+    "react-customizable-progressbar": "^1.2.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.4.5"
+  }
+}
