@@ -1,4 +1,4 @@
-import { ISendMail } from "../Interfaces/utils_interfaces";
+import { ISendMail } from "../Interfaces/utils/utils.interfaces";
 
 import nodemailer from "nodemailer";
 

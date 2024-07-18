@@ -1,7 +1,7 @@
 {
   "name": "servercode",
   "version": "1.0.0",
-  "description": "Rate My Office",
+  "description": "Work Nexus",
   "main": "App.ts",
   "scripts": {
     "start": "nodemon src/App.ts",
@@ -10,8 +10,7 @@
     "start:prod": "pm2 start App.ts --name 'servercode' && pm2 save"
   },
   "keywords": [
-    "office",
-    "rate"
+    "Startup Marketplace"
   ],
   "author": "Viraj Bhartiya",
   "license": "ISC",

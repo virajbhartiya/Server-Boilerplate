@@ -1,5 +1,5 @@
 import { Query } from "mongoose";
-import { IAPIFeatures } from "../Interfaces/utils_interfaces";
+import { IAPIFeatures } from "../Interfaces/utils/utils.interfaces";
 
 class APIFeatures implements IAPIFeatures {
   constructor(

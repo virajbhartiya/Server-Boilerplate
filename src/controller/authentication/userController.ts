@@ -1,8 +1,8 @@
 import moment from "moment";
 import { catchAsync } from "../../utils/utils";
-import { IBaseRequest } from "../../Interfaces/core_interfaces";
+import { IBaseRequest } from "../../Interfaces/utils/utils.interfaces";
 import { NextFunction, Response } from "express";
-import Users from "../../models/Users";
+import Users from "../../models/user.model";
 import { sendEmail } from "../../utils/helper";
 const { ObjectId } = require("mongoose").Types;
 

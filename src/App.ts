@@ -1,71 +1,80 @@
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
 import mongoose from "mongoose";
 import passport from "passport";
 import morgan from "morgan";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import compression from "compression";
-import globalErrorHandler from "./controller/globalErrorController";
-import { passportInit } from "./controller/authentication/authController";
 import http from "http";
 import dotenv from "dotenv";
-import { routes } from "./routes";
 import path from "path";
+import globalErrorHandler from "./controller/utils/globalErrorController";
+import { passportInit } from "./controller/auth.controller";
+import { routes } from "./routes/index.route";
 
-const app = express();
+// Load environment variables
 dotenv.config();
 
-const protocol = http.createServer(app);
+const app = express();
+const server = http.createServer(app);
+const port = process.env.PORT;
+const mongoUri = process.env.MONGODB_URI || "";
+const reactAppBaseUrl = process.env.REACT_APP_BASE_URL;
 
-process.on("uncaughtException", (err) => {
-  console.log("UNCAUGHT EXCEPTION! 💥 Shutting down...");
-  console.log(err.name, err.message);
+// Handle uncaught exceptions
+process.on("uncaughtException", (err: Error) => {
+  console.error("UNCAUGHT EXCEPTION! 💥 Shutting down...");
+  console.error(err.name, err.message);
   process.exit(1);
 });
 
+// Connect to MongoDB
 mongoose
-  .connect(process.env.MONGODB_URI ?? "")
-  .then(() => console.log("connected"))
-  .catch((err: any) => console.log("Couldn't connect to Mongodb", err));
+  .connect(mongoUri)
+  .then(() => console.log("MongoDB connected successfully"))
+  .catch((err: Error) => console.error("Couldn't connect to MongoDB", err));
 
+// Set mongoose to use global promises
 mongoose.Promise = global.Promise;
+
+// Middleware setup
 app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-
 app.use(
   cors({
     credentials: true,
-    origin: process.env.REACT_APP_BASE_URL
-      ? [process.env.REACT_APP_BASE_URL]
-      : true,
+    origin: reactAppBaseUrl ? [reactAppBaseUrl] : true,
   })
 );
-
 app.use(cookieParser());
-
 app.use(compression());
-
 app.use(passport.initialize());
 passportInit(passport);
 
+// Routes
 routes(app);
 
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "/../client/build")));
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "/../client/build", "index.html"));
-  });
-}
+// Global error handler
+app.use(
+  globalErrorHandler as unknown as (
+    err: Error,
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => void
+);
 
-app.use(globalErrorHandler);
-
-const port = process.env.PORT;
-protocol.listen(port, () => {
-  console.log(`Api is running on port ${port} - ${process.env.NODE_ENV}`);
+// Start the server
+server.listen(port, () => {
+  console.log(`API is running on port ${port} - ${process.env.NODE_ENV}`);
 });
 
-process.on("unhandledRejection", (err: any) => {
-  console.log("Unhandled Rejection!");
-  console.log(err.name, err.message);
+// Handle unhandled promise rejections
+process.on("unhandledRejection", (err: Error) => {
+  console.error("Unhandled Rejection! 💥 Shutting down...");
+  console.error(err.name, err.message);
+  server.close(() => {
+    process.exit(1);
+  });
 });
