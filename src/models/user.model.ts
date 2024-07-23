@@ -1,13 +1,14 @@
 import { IUser } from "../Interfaces/user.interface";
 import mongoose from "mongoose";
 import crypto from "crypto";
+
 const UserSchema = new mongoose.Schema<IUser>(
   {
-    first_name: {
+    firstName: {
       type: String,
       trim: true,
     },
-    last_name: {
+    lastName: {
       type: String,
       trim: true,
     },
@@ -17,36 +18,15 @@ const UserSchema = new mongoose.Schema<IUser>(
       lowercase: true,
       unique: true,
     },
-    gender: {
-      type: String,
-      enum: ["male", "female"],
-    },
-    photo: String,
-    mobile_number: String,
-    fav_club: String,
-    profile_photo: {
-      type: String,
-      default: "default.png",
-    },
-    dob: String,
-    user_team: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Users",
-    },
     hashed_password: {
       type: String,
     },
     salt: {
       type: String,
     },
-    resetPasswordLink: {
-      type: String,
-      default: "",
-    },
   },
   {
     timestamps: true,
-    // toJSON: { virtuals: true },
   }
 );
 
@@ -84,7 +64,5 @@ UserSchema.methods = {
 UserSchema.set("toJSON", { virtuals: true });
 
 const UserModel = mongoose.model<IUser>("Users", UserSchema);
-
-// UserModel.watch().on("delete", (data) => console.log(new Date(), data));
 
 export default UserModel;

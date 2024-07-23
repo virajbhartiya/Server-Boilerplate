@@ -1,18 +1,15 @@
 import Users from "../models/user.model";
 import { Response, Request } from "express";
-import { sign, verify } from "jsonwebtoken";
-import { extend } from "lodash";
-import { sendEmail } from "../utils/helper";
+import { sign } from "jsonwebtoken";
 import passport_jwt from "passport-jwt";
 
 export const signup = (req: Request, res: Response) => {
   const {
-    first_name,
-    last_name,
+    firstName,
+    lastName,
     emailId,
     password,
-    confirm_password,
-    gender,
+    confirmPassword,
     mobile_number,
   } = req.body;
 
@@ -25,13 +22,11 @@ export const signup = (req: Request, res: Response) => {
       }
 
       const newUser = new Users({
-        first_name,
-        last_name,
+        firstName,
+        lastName,
         emailId,
         password,
-        confirm_password,
-        gender,
-        personal_details: { mobile_number: mobile_number },
+        confirmPassword,
       });
 
       newUser
@@ -101,112 +96,6 @@ export const signin = (req: Request, res: Response) => {
         });
       }
     });
-};
-
-export const forgotPassword = (req: Request, res: Response) => {
-  const { emailId } = req.body;
-  Users.findOne({ emailId })
-    .then((user: any) => {
-      if (!user) {
-        return res.status(400).json({
-          error: "User does not exist.",
-        });
-      }
-
-      if (user.isMarried) {
-        return res.status(400).json({
-          error: "User is already married.",
-        });
-      }
-
-      const token = sign(
-        {
-          _id: user._id,
-          name: `${user.first_name} ${user.last_name}`,
-        },
-        process.env.JWT_RESET_PASSWORD ?? "",
-        {
-          expiresIn: "10m",
-        }
-      );
-
-      const emailData = {
-        from: process.env.EMAIL_FROM,
-        to: emailId,
-        subject: `Password reset link`,
-        text: `Please use the following link to reset your password: ${process.env.CLIENT_URL}/reset-password/${token}`,
-      };
-
-      return user.updateOne(
-        { resetPasswordLink: token },
-        (err: any, _success: any) => {
-          if (err) {
-            return res.status(400).json({
-              error: `datase Connection reset password error ${err}`,
-            });
-          } else {
-            sendEmail(emailData)
-              .then((_info: any) => {
-                return res.json({
-                  message: `Email has been sent to ${emailData.to}. Follow the instruction to activate your account`,
-                });
-              })
-              .catch((err: any) => {
-                return res.json({
-                  message: err,
-                });
-              });
-          }
-        }
-      );
-    })
-    .catch((err) => {
-      if (err) {
-        return res.status(400).json({
-          error: "User does not exist.",
-          err,
-        });
-      }
-    });
-};
-
-export const resetPassword = (req: Request, res: Response) => {
-  const { resetPasswordLink, newPassword } = req.body;
-  if (resetPasswordLink) {
-    verify(
-      resetPasswordLink,
-      process.env.JWT_RESET_PASSWORD ?? "",
-      function (err: any, _decoded: any) {
-        if (err) {
-          return res.status(400).json({
-            error: `Expired reset password link error ${err}`,
-          });
-        }
-        Users.findOne({ resetPasswordLink }, (err: any, user: any) => {
-          if (err || !user) {
-            return res.status(400).json({
-              error: `NO user Found ${err}`,
-            });
-          }
-          const updatePassword = {
-            password: newPassword,
-            resetPasswordLink: "",
-          };
-          user = extend(user, updatePassword);
-          user.save((err: any, result: { name: any }) => {
-            if (err) {
-              return res.status(400).json({
-                error: `reset password saving ERROR ${err}`,
-              });
-            }
-            res.json({
-              message: `Great ,${result.name} now you can login with new password`,
-            });
-          });
-        });
-      }
-    );
-  }
 };
 
 const JwtStrategy = passport_jwt.Strategy;
