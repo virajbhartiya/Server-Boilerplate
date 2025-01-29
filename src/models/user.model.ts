@@ -12,7 +12,7 @@ const UserSchema = new mongoose.Schema<IUser>(
       type: String,
       trim: true,
     },
-    emailId: {
+    email: {
       type: String,
       trim: true,
       lowercase: true,

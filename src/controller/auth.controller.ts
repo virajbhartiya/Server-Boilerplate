@@ -7,13 +7,13 @@ export const signup = (req: Request, res: Response) => {
   const {
     firstName,
     lastName,
-    emailId,
+    email,
     password,
     confirmPassword,
     mobile_number,
   } = req.body;
 
-  Users.findOne({ emailId: emailId })
+  Users.findOne({ email: email })
     .then((user: any) => {
       if (user) {
         return res.status(400).json({
@@ -24,7 +24,7 @@ export const signup = (req: Request, res: Response) => {
       const newUser = new Users({
         firstName,
         lastName,
-        emailId,
+        email,
         password,
         confirmPassword,
       });
@@ -64,8 +64,8 @@ export const signup = (req: Request, res: Response) => {
 };
 
 export const signin = (req: Request, res: Response) => {
-  const { emailId, password } = req.body;
-  Users.findOne({ emailId })
+  const { email, password } = req.body;
+  Users.findOne({ email })
     .then((user: any) => {
       if (!user.authenticate(password)) {
         return res.status(400).json({

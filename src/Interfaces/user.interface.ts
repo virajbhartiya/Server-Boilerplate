@@ -4,7 +4,7 @@ export interface IUser extends Document {
   _id: ObjectId;
   firstName: string;
   lastName: string;
-  emailId: string;
+  email: string;
   role: string;
   createdAt: string;
   hashed_password: string;
